@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Polling App - Admin</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container">
+        <h1>🗳️ Create Poll</h1>
+
+        <!-- Poll Form -->
+        <form id="pollForm">
+            <input type="text" id="question" placeholder="Enter your question..." required>
+
+            <div id="options">
+                <input type="text" placeholder="Option 1" required>
+                <input type="text" placeholder="Option 2" required>
+            </div>
+
+            <button type="button" onclick="addOption()">+ Add Option</button>
+            <button type="submit">Create Poll</button>
+        </form>
+
+        <!-- Room Info -->
+        <div id="roomSection" style="display:none;">
+            <h2>Room Code: <span id="roomCode"></span></h2>
+            <p>Participants Joined: <span id="userCount">0</span></p>
+
+            <button onclick="startVoting()">🚀 Start Voting</button>
+        </div>
+
+        <!-- Live Results -->
+        <div id="resultsSection" style="display:none;">
+            <h2>Live Results</h2>
+            <div id="results"></div>
+
+            <button onclick="endPoll()">❌ End Poll</button>
+        </div>
+    </div>
+
+<script>
+let optionCount = 2;
+
+function addOption() {
+    if (optionCount >= 6) return;
+
+    optionCount++;
+    const input = document.createElement("input");
+    input.type = "text";
+    input.placeholder = "Option " + optionCount;
+    input.required = true;
+
+    document.getElementById("options").appendChild(input);
+}
+
+// Create Poll
+document.getElementById("pollForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    const question = document.getElementById("question").value;
+    const options = document.querySelectorAll("#options input");
+
+    let optionList = [];
+    options.forEach(opt => optionList.push(opt.value));
+
+    console.log("Poll Created:", question, optionList);
+
+    // Generate Room Code
+    const room = Math.floor(1000 + Math.random() * 9000);
+    document.getElementById("roomCode").innerText = room;
+
+    document.getElementById("roomSection").style.display = "block";
+});
+
+// Start Voting
+function startVoting() {
+    document.getElementById("resultsSection").style.display = "block";
+}
+
+// End Poll
+function endPoll() {
+    alert("Poll Ended!");
+}
+</script>
+
+</body>
+</html>
