@@ -1,0 +1,15 @@
+{
+  "name": "live-polling-app",
+  "version": "1.0.0",
+  "description": "Real-time polling app using Node.js and Socket.io",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "author": "Rudra Pratap Singh",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.2.1",
+    "socket.io": "^4.8.3"
+  }
+}
