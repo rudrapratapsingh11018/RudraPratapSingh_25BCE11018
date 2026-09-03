@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vote | Live Polling App</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Main container -->
+    <div class="container">
+
+        <!-- Page heading -->
+        <h1>Join Poll</h1>
+
+        <!-- Section to enter room code -->
+        <div id="join-section">
+            <input type="text" id="roomCode" placeholder="Enter Room Code">
+            <button onclick="joinRoom()">Join</button>
+        </div>
+
+        <!-- Waiting message before poll starts -->
+        <div id="waiting-section" style="display:none;">
+            <p>Waiting for admin to start the poll...</p>
+        </div>
+
+        <!-- Voting section -->
+        <div id="vote-section" style="display:none;">
+            <!-- Question will be inserted dynamically -->
+            <h2 id="question"></h2>
+
+            <!-- Options will be inserted dynamically -->
+            <div id="options"></div>
+        </div>
+
+        <!-- Confirmation after voting -->
+        <div id="result-section" style="display:none;">
+            <p>Your vote has been submitted.</p>
+        </div>
+
+    </div>
+
+    <!-- Socket.io client -->
+    <script src="/socket.io/socket.io.js"></script>
+
+    <script>
+        // Connect to server
+        const socket = io();
+
+        let currentRoom = "";
+
+        // Function to join a room using room code
+        function joinRoom() {
+            const roomCode = document.getElementById("roomCode").value;
+
+            if (roomCode.trim() === "") return;
+
+            currentRoom = roomCode;
+
+            // Emit join event to server
+            socket.emit("joinRoom", roomCode);
+
+            // Hide join section and show waiting
+            document.getElementById("join-section").style.display = "none";
+            document.getElementById("waiting-section").style.display = "block";
+        }
+
+        // Listen for poll start event from server
+        socket.on("pollStarted", (data) => {
+
+            // Hide waiting section
+            document.getElementById("waiting-section").style.display = "none";
+
+            // Show voting section
+            document.getElementById("vote-section").style.display = "block";
+
+            // Set question text
+            document.getElementById("question").innerText = data.question;
+
+            const optionsDiv = document.getElementById("options");
+            optionsDiv.innerHTML = "";
+
+            // Create buttons for each option
+            data.options.forEach((option, index) => {
+                const btn = document.createElement("button");
+                btn.innerText = option;
+
+                // When user clicks option, send vote
+                btn.onclick = () => vote(index);
+
+                optionsDiv.appendChild(btn);
+            });
+        });
+
+        // Function to send vote to server
+        function vote(optionIndex) {
+
+            // Emit vote event
+            socket.emit("vote", {
+                room: currentRoom,
+                option: optionIndex
+            });
+
+            // Hide voting section
+            document.getElementById("vote-section").style.display = "none";
+
+            // Show confirmation
+            document.getElementById("result-section").style.display = "block";
+        }
+    </script>
+
+</body>
+</html>
